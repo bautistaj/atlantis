@@ -75,6 +75,14 @@ GamePlayManager = {
   onTap: function(){
     this.flagFirstMouseDown =  true;
   },
+  getBoundsHorse:function(){
+    var x0 = this.horse.x - Math.abs(this.horse.width)/4;
+    var width = Math.abs(this.horse.width)/2;
+    var y0 = this.horse.y - this.horse.height/2;
+    var height = this.horse.height;
+
+    return new Phaser.Rectangle(x0,y0,width,height);
+  },
   update: function(){
     if(this.flagFirstMouseDown){
       var pointerX = game.input.x;
@@ -87,6 +95,15 @@ GamePlayManager = {
       this.horse.scale.setTo( distX > 0 ? 1 : -1 ,1);
       this.horse.x += distX * 0.05;
       this.horse.y += distY * 0.05;
+
+      for(var i = 0; i < AMOUT_DIAMONTS; i++){
+        var rectHorse = this.getBoundsHorse();
+        var rectDiamond = this.getBoundsDiamond(this.diamonds[i]);
+        if(this.isRectangleOverlapping(rectHorse, rectDiamond)){
+          console.log("Colision");
+          //return true;
+        }
+      }
     }
 
   }
