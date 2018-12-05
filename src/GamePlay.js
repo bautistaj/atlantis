@@ -13,6 +13,7 @@ GamePlayManager = {
     game.load.image('background',"assets/images/background.png");
     game.load.spritesheet("horse","assets/images/horse.png",84, 156, 2);
     game.load.spritesheet("diamonds","assets/images/diamonds.png",81, 84, 4);
+    game.load.spritesheet("explosion","assets/images/explosion.png",81, 84, 4);
   },
 
   create: function(){
@@ -47,6 +48,22 @@ GamePlayManager = {
           diamond.y = game.rnd.integerInRange(50,600);
           rectCurrentDiamond = this.getBoundsDiamond(diamond);
         }
+      }
+
+      this.explosionGroup = game.add.group();
+      for(var i = 0; i < 10; i++){
+        this.explosion = this.explosionGroup.create(100,100,'explosion');
+        this.explosion.tweenScale = game.add.tween(this.explosion.scale).to({
+          x:[0.4,0.8,0.4],
+          y:[0.4,0.8,0.4]
+        }, 600, Phaser.Easing.Exponential.Out, false, 0,0,false);
+
+        this.explosion.tweenAlpha = game.add.tween(this.explosion).to({
+          alpha:[1, 0.6, 0]
+        }, 600, Phaser.Easing.Exponential.Out, false, 0,0,false);
+
+        this.explosion.anchor.setTo(0.5);
+        this.explosion.kill();
       }
   },
   getBoundsDiamond: function(currentDiamond){
@@ -99,10 +116,22 @@ GamePlayManager = {
       for(var i = 0; i < AMOUT_DIAMONTS; i++){
         var rectHorse = this.getBoundsHorse();
         var rectDiamond = this.getBoundsDiamond(this.diamonds[i]);
-        if(this.isRectangleOverlapping(rectHorse, rectDiamond)){
-          console.log("Colision");
-          //return true;
+
+        if( this.diamonds[i].visible && this.isRectangleOverlapping(rectHorse, rectDiamond) ) {
+          this.diamonds[i].visible = false;
+
+          var explosion = this.explosionGroup.getFirstDead();
+          if(explosion != null){
+            explosion.reset(this.diamonds[i].x, this.diamonds[i].y);
+            explosion.tweenScale.start();
+            explosion.tweenAlpha.start();
+
+            explosion.tweenAlpha.onComplete.add(function (currentTarget, currentTween){
+              currentTarget.kill();
+            }, this);
+          }
         }
+
       }
     }
 
