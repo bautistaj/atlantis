@@ -65,6 +65,19 @@ GamePlayManager = {
         this.explosion.anchor.setTo(0.5);
         this.explosion.kill();
       }
+
+      this.currentScore = 0;
+      var style = {
+        font: 'bold 30pt Arial',
+        fill: '#FFFFFF',
+        align: 'center'
+      }
+      this.scoreText = game.add.text(game.width/2, 40, '0', style);
+      this.scoreText.anchor.setTo(0.5);
+  },
+  increaseScore: function(){
+    this.currentScore+=100;
+    this.scoreText.text =  this.currentScore;
   },
   getBoundsDiamond: function(currentDiamond){
     return new Phaser.Rectangle(currentDiamond.left,
@@ -118,6 +131,7 @@ GamePlayManager = {
         var rectDiamond = this.getBoundsDiamond(this.diamonds[i]);
 
         if( this.diamonds[i].visible && this.isRectangleOverlapping(rectHorse, rectDiamond) ) {
+          this.increaseScore();
           this.diamonds[i].visible = false;
 
           var explosion = this.explosionGroup.getFirstDead();
